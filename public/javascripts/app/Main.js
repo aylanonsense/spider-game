@@ -2,11 +2,13 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define([
 	'jquery',
 	'app/WebPoint',
-	'app/WebStrand'
+	'app/WebStrand',
+	'app/Spider'
 ], function(
 	$,
 	WebPoint,
-	WebStrand
+	WebStrand,
+	Spider
 ) {
 	return function() {
 		var WIDTH = 800, HEIGHT = 600;
@@ -16,9 +18,11 @@ define([
 		var camera = { x: 0, y: 0 };
 
 		//init game objects
+		var spider = new Spider(400, 250);
 		var strands = [];
 		var points = [];
 		var tempWebPoint = null;
+		var wind = 0;
 
 		function createPoint(x, y, fixed) {
 			var point = new WebPoint(x, y, fixed);
@@ -78,6 +82,12 @@ define([
 
 		//input bindings
 		var keys = { pressed: {} };
+		var MOVE_KEYS = {
+			UP: 87, //W
+			LEFT: 65, //A
+			DOWN: 83, //S
+			RIGHT: 68 //D
+		};
 		$(document).on('keydown', function(evt) {
 			if(!keys[evt.which]) {
 				keys[evt.which] = true;
@@ -94,12 +104,24 @@ define([
 
 		//the main game loop
 		function tick() {
-			for(var i = 0; i < strands.length; i++) {
+			wind += Math.random() - 0.5;
+			if(wind > 3) {
+				wind = 3;
+			}
+			else if(wind < -3) {
+				wind = -3;
+			}
+			for(var i = 0; i < points.length; i++) {
+				points[i]._vel.x += wind;
+			}
+			for(i = 0; i < strands.length; i++) {
 				strands[i].tick();
 			}
 			for(i = 0; i < points.length; i++) {
 				points[i].tick();
 			}
+			var m = MOVE_KEYS;
+			spider.tick(strands, keys[m.LEFT] ? -1 : (keys[m.RIGHT] ? 1 : 0), keys[m.UP] ? -1 : (keys[m.DOWN] ? 1 : 0));
 
 			//render
 			ctx.fillStyle = '#fff';
@@ -110,6 +132,7 @@ define([
 			for(i = 0; i < points.length; i++) {
 				//points[i].render(ctx, camera);
 			}
+			spider.render(ctx, camera);
 		}
 
 		//set up animation frame functionality
