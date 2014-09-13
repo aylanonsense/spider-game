@@ -1,6 +1,7 @@
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(function() {
 	var MOVE_SPEED = 100;
+	var DIAG_MOVE_SPEED = MOVE_SPEED / Math.sqrt(2);
 	function Spider(x, y) {
 		this.x = x;
 		this.y = y;
@@ -9,30 +10,62 @@ define(function() {
 		this._move = { x: 0, y: 0 };
 		this._anchorStrand = null;
 		this._anchorStrandPercent = 0.0;
+		this._anchorStrandPos = null;
 	}
 	Spider.prototype.tick = function(strands, moveX, moveY) {
+		var dx, dy, collision;
 		if(this._anchorStrand) {
-			this.x = this._anchorStrand.start.x + this._anchorStrandPercent * (this._anchorStrand.end.x - this._anchorStrand.start.x);
-			this.y = this._anchorStrand.start.y + this._anchorStrandPercent * (this._anchorStrand.end.y - this._anchorStrand.start.y);
+			dx = this._anchorStrand.start.x + this._anchorStrandPercent * (this._anchorStrand.end.x - this._anchorStrand.start.x) - this._anchorStrandPos.x;
+			dy = this._anchorStrand.start.y + this._anchorStrandPercent * (this._anchorStrand.end.y - this._anchorStrand.start.y) - this._anchorStrandPos.y;
+			this.x += dx;
+			this.y += dy;
 		}
-		this._anchorStrand = null;
 		this._move = { x: moveX, y: moveY };
-		this.x += MOVE_SPEED * this._move.x / 60;
-		this.y += MOVE_SPEED * this._move.y / 60;
+		this.x += (this._move.x === 0 || this._move.y === 0 ? MOVE_SPEED : DIAG_MOVE_SPEED) * this._move.x / 60;
+		this.y += (this._move.x === 0 || this._move.y === 0 ? MOVE_SPEED : DIAG_MOVE_SPEED) * this._move.y / 60;
 		var closestCollision = null;
+		var numCollisions = 0;
 		for(var i = 0; i < strands.length; i++) {
-			var collision = this._checkForCollision(strands[i]);
-			if(collision && (!closestCollision || collision.dist < closestCollision.dist)) {
-				closestCollision = collision;
+			collision = this._checkForCollision(strands[i]);
+			if(collision) {
+				numCollisions++;
+				if(!closestCollision || collision.dist < closestCollision.dist) {
+					closestCollision = collision;
+				}
+			}
+		}
+		if(!closestCollision) {
+			numCollisions = 0;
+			this.x -= MOVE_SPEED * this._move.x / 60;
+			this.y -= MOVE_SPEED * this._move.y / 60;
+			for(i = 0; i < strands.length; i++) {
+				collision = this._checkForCollision(strands[i]);
+				if(collision) {
+					numCollisions++;
+					if(!closestCollision || collision.dist < closestCollision.dist) {
+						closestCollision = collision;
+					}
+				}
 			}
 		}
 		if(closestCollision) {
 			this._anchorStrand = closestCollision.strand;
 			this._anchorStrandPercent = closestCollision.strandPercent;
+			this._anchorStrandPos = {
+				x: this._anchorStrand.start.x + this._anchorStrandPercent * (this._anchorStrand.end.x - this._anchorStrand.start.x),
+				y: this._anchorStrand.start.y + this._anchorStrandPercent * (this._anchorStrand.end.y - this._anchorStrand.start.y)
+			};
+			if(numCollisions === 1) {
+				dx = closestCollision.x - this.x;
+				dy = closestCollision.y - this.y;
+				var dist = Math.sqrt(dx * dx + dy * dy);
+				var adjustAmt = 0.25 * dist;
+				this.x += adjustAmt * (dx / dist);
+				this.y += adjustAmt * (dy / dist);
+			}
 		}
 		else {
 			this._anchorStrand = null;
-			this._anchorStrandPercent = 0.0;
 		}
 	};
 	Spider.prototype._checkForCollision = function(strand) {
@@ -64,6 +97,8 @@ define(function() {
 			}
 			else {
 				return {
+					x: intersectionX,
+					y: intersectionY,
 					dist: Math.sqrt(squareDistToIntersection),
 					strand: strand,
 					strandPercent: strandPercent
