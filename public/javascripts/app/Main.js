@@ -18,7 +18,7 @@ define([
 		var camera = { x: 0, y: 0 };
 
 		//init game objects
-		var spider = new Spider(400, 250);
+		var spider = new Spider(100, 50);
 		var strands = [];
 		var points = [];
 		var tempWebPoint = null;
@@ -36,49 +36,18 @@ define([
 		}
 
 		//create web
-		var centerPoint = createPoint(400, 250);
-		var prevPoint1 = createPoint(400 + 200, 250);
-		var prevPoint2 = createPoint(400 + 125, 250);
-		var prevPoint3 = createPoint(400 + 50, 250);
-		var start1 = prevPoint1;
-		var start2 = prevPoint2;
-		var start3 = prevPoint3;
-		createStrand(prevPoint1, prevPoint2);
-		createStrand(prevPoint2, prevPoint3);
-		createStrand(prevPoint3, centerPoint);
-		for(var i = 1; i < 20; i++) {
-			var point1 = createPoint(400 + 200 * Math.cos(i * Math.PI / 10), 250 + 200 * Math.sin(i * Math.PI / 10));
-			var point2 = createPoint(400 + 125 * Math.cos(i * Math.PI / 10), 250 + 125 * Math.sin(i * Math.PI / 10));
-			var point3 = createPoint(400 + 50 * Math.cos(i * Math.PI / 10), 250 + 50 * Math.sin(i * Math.PI / 10));
-			createStrand(point1, point2);
-			createStrand(point2, point3);
-			createStrand(point3, centerPoint);
-			createStrand(point1, prevPoint1);
-			createStrand(point2, prevPoint2);
-			createStrand(point3, prevPoint3);
-			prevPoint1 = point1;
-			prevPoint2 = point2;
-			prevPoint3 = point3;
-		}
-		createStrand(start1, prevPoint1);
-		createStrand(start2, prevPoint2);
-		createStrand(start3, prevPoint3);
-		var fixed1 = createPoint(100, 50, true);
-		var fixed2 = createPoint(250, 10, true);
-		var fixed3 = createPoint(700, 75, true);
-		var fixed4 = createPoint(750, 250, true);
-		var fixed5 = createPoint(50, 500, true);
-		createStrand(fixed1, points[37]);
-		createStrand(fixed1, points[31]);
-		createStrand(fixed2, points[40]);
-		createStrand(fixed2, points[46]);
-		createStrand(fixed3, points[46]);
-		createStrand(fixed3, points[49]);
-		createStrand(fixed3, points[58]);
-		createStrand(fixed4, points[4]);
-		createStrand(fixed4, points[7]);
-		createStrand(fixed5, points[22]);
-		createStrand(createPoint(100, 100), points[31]);
+		var pt1 = createPoint(50, 50);
+		var pt2 = createPoint(750, 50);
+		var pt3 = createPoint(750, 550);
+		var pt4 = createPoint(50, 550);
+		createStrand(pt1, pt2);
+		createStrand(pt2, pt3);
+		createStrand(pt3, pt4);
+		createStrand(pt4, pt1);
+		createStrand(pt1, createPoint(0, 0, true));
+		createStrand(pt2, createPoint(800, 0, true));
+		createStrand(pt3, createPoint(800, 600, true));
+		createStrand(pt4, createPoint(0, 600, true));
 
 		//input bindings
 		var keys = { pressed: {} };
@@ -124,15 +93,15 @@ define([
 			spider.tick(strands, keys[m.LEFT] ? -1 : (keys[m.RIGHT] ? 1 : 0), keys[m.UP] ? -1 : (keys[m.DOWN] ? 1 : 0));
 
 			//render
-			ctx.fillStyle = '#fff';
+			ctx.fillStyle = '#000';
 			ctx.fillRect(0, 0, WIDTH, HEIGHT);
+			spider.render(ctx, camera);
 			for(i = 0; i < strands.length; i++) {
 				strands[i].render(ctx, camera);
 			}
 			for(i = 0; i < points.length; i++) {
-				//points[i].render(ctx, camera);
+				points[i].render(ctx, camera);
 			}
-			spider.render(ctx, camera);
 		}
 
 		//set up animation frame functionality

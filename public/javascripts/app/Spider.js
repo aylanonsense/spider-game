@@ -110,7 +110,7 @@ define(function() {
 		return null;
 	};
 	Spider.prototype.render = function(ctx, camera) {
-		ctx.fillStyle = '#a33';
+		ctx.fillStyle = '#3a3';
 		ctx.beginPath();
 		ctx.arc(this.x - camera.x, this.y - camera.y, this._radius, 0, 2 * Math.PI, false);
 		ctx.fill();

@@ -20,8 +20,8 @@ define(function() {
 		this.end.applyForce(amt * dx / dist, amt * dy / dist);
 	};
 	WebStrand.prototype.render = function(ctx, camera) {
-		ctx.strokeStyle = '#000';
-		ctx.lineWidth = 0.5;
+		ctx.strokeStyle = '#fff';
+		ctx.lineWidth = 1;
 		ctx.beginPath();
 		ctx.moveTo(this.start.x - camera.x, this.start.y - camera.y);
 		ctx.lineTo(this.end.x - camera.x, this.end.y - camera.y);

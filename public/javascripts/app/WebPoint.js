@@ -28,7 +28,7 @@ define(function() {
 		}
 	};
 	WebPoint.prototype.render = function(ctx, camera) {
-		ctx.fillStyle = '#000';
+		ctx.fillStyle = '#fff';
 		ctx.beginPath();
 		ctx.arc(this.x - camera.x, this.y - camera.y, 2, 0, 2 * Math.PI, false);
 		ctx.fill();
