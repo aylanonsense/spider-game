@@ -7,7 +7,7 @@ define(function() {
 		this.end = end;
 		var dx = (this.start.x - this.end.x);
 		var dy = (this.start.y - this.end.y);
-		this._dist = Math.sqrt(dx * dx + dy * dy);
+		this._dist = Math.sqrt(dx * dx + dy * dy) * 0.99;
 		this.start.addWeight(this._dist / 2);
 		this.end.addWeight(this._dist / 2);
 	}

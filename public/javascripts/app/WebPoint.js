@@ -21,8 +21,8 @@ define(function() {
 	WebPoint.prototype.tick = function() {
 		if(!this._isFixed) {
 			this._vel.y += 2; //gravity
-			this._vel.x *= 0.99;
-			this._vel.y *= 0.99;
+			this._vel.x *= 0.96;
+			this._vel.y *= 0.96;
 			this.x += this._vel.x / 60;
 			this.y += this._vel.y / 60;
 		}
