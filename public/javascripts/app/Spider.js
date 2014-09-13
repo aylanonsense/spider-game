@@ -1,5 +1,11 @@
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
-define(function() {
+define([
+	'app/WebPoint',
+	'app/WebStrand'
+], function(
+	WebPoint,
+	WebStrand
+) {
 	var MOVE_SPEED = 100;
 	var DIAG_MOVE_SPEED = MOVE_SPEED / Math.sqrt(2);
 	function Spider(x, y) {
@@ -12,6 +18,25 @@ define(function() {
 		this._anchorStrandPercent = 0.0;
 		this._anchorStrandPos = null;
 	}
+	Spider.prototype.startSpinningWeb = function() {
+		if(this._anchorStrand) {
+			var x = this._anchorStrand.start.x + this._anchorStrandPercent * (this._anchorStrand.end.x - this._anchorStrand.start.x);
+			var y = this._anchorStrand.start.y + this._anchorStrandPercent * (this._anchorStrand.end.y - this._anchorStrand.start.y);
+			var point = new WebPoint(x, y);
+			var strandToRemove = this._anchorStrand;
+			var strand1 = new WebStrand(this._anchorStrand.start, point);
+			var strand2 = new WebStrand(point, this._anchorStrand.end);
+			this._anchorStrand = strand2;
+			this._anchorStrandPercent = 0.0;
+			this._anchorStrandPos = { x: x, y: y };
+			return {
+				pointToAdd: point,
+				strandsToAdd: [ strand1, strand2 ],
+				strandToRemove: strandToRemove
+			};
+		}
+		return null;
+	};
 	Spider.prototype.tick = function(strands, moveX, moveY) {
 		var dx, dy, collision;
 		if(this._anchorStrand) {

@@ -27,5 +27,8 @@ define(function() {
 		ctx.lineTo(this.end.x - camera.x, this.end.y - camera.y);
 		ctx.stroke();
 	};
+	WebStrand.prototype.sameAs = function(other) {
+		return this._id === other._id;
+	};
 	return WebStrand;
 });

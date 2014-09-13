@@ -18,7 +18,7 @@ define([
 		var camera = { x: 0, y: 0 };
 
 		//init game objects
-		var spider = new Spider(100, 50);
+		var spider = new Spider(175, 100);
 		var strands = [];
 		var points = [];
 		var tempWebPoint = null;
@@ -36,16 +36,16 @@ define([
 		}
 
 		//create web
-		var pt1 = createPoint(50, 50);
-		var pt2 = createPoint(750, 50);
-		var pt3 = createPoint(750, 550);
-		var pt4 = createPoint(50, 550);
+		var pt1 = createPoint(175, 25);
+		var pt2 = createPoint(625, 25);
+		var pt3 = createPoint(625, 450);
+		var pt4 = createPoint(175, 450);
 		createStrand(pt1, pt2);
 		createStrand(pt2, pt3);
 		createStrand(pt3, pt4);
 		createStrand(pt4, pt1);
-		createStrand(pt1, createPoint(0, 0, true));
-		createStrand(pt2, createPoint(800, 0, true));
+		createStrand(pt1, createPoint(150, 0, true));
+		createStrand(pt2, createPoint(650, 0, true));
 		createStrand(pt3, createPoint(800, 600, true));
 		createStrand(pt4, createPoint(0, 600, true));
 
@@ -57,14 +57,26 @@ define([
 			DOWN: 83, //S
 			RIGHT: 68 //D
 		};
+		var SPIN_WEB_KEY = 16; //SHIFT
 		$(document).on('keydown', function(evt) {
 			if(!keys[evt.which]) {
 				keys[evt.which] = true;
+				if(evt.which === SPIN_WEB_KEY) {
+					var changes = spider.startSpinningWeb();
+					if(changes) {
+						strands = strands.filter(function(strand) { return !strand.sameAs(changes.strandToRemove); });
+						strands = strands.concat(changes.strandsToAdd);
+						points.push(changes.pointToAdd);
+					}
+				}
 			}
 		});
 		$(document).on('keyup', function(evt) {
 			if(keys[evt.which]) {
 				keys[evt.which] = false;
+				if(evt.which === SPIN_WEB_KEY) {
+					//TODO
+				}
 			}
 		});
 		$(document).on('click', function(evt) {
