@@ -60,8 +60,10 @@ define(function() {
 				dy = closestCollision.y - this.y;
 				var dist = Math.sqrt(dx * dx + dy * dy);
 				var adjustAmt = 0.25 * dist;
-				this.x += adjustAmt * (dx / dist);
-				this.y += adjustAmt * (dy / dist);
+				if(dist > 0) {
+					this.x += adjustAmt * (dx / dist);
+					this.y += adjustAmt * (dy / dist);
+				}
 			}
 		}
 		else {
