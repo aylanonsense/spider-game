@@ -6,7 +6,7 @@ define([
 	WebPoint,
 	WebStrand
 ) {
-	var MOVE_SPEED = 100;
+	var MOVE_SPEED = 250;
 	var DIAG_MOVE_SPEED = MOVE_SPEED / Math.sqrt(2);
 	function Spider(x, y) {
 		this.x = x;
@@ -17,23 +17,50 @@ define([
 		this._anchorStrand = null;
 		this._anchorStrandPercent = 0.0;
 		this._anchorStrandPos = null;
+		this._spinPoint = null;
 	}
 	Spider.prototype.startSpinningWeb = function() {
 		if(this._anchorStrand) {
 			var x = this._anchorStrand.start.x + this._anchorStrandPercent * (this._anchorStrand.end.x - this._anchorStrand.start.x);
 			var y = this._anchorStrand.start.y + this._anchorStrandPercent * (this._anchorStrand.end.y - this._anchorStrand.start.y);
-			var point = new WebPoint(x, y);
+			this._spinPoint = new WebPoint(x, y);
 			var strandToRemove = this._anchorStrand;
-			var strand1 = new WebStrand(this._anchorStrand.start, point);
-			var strand2 = new WebStrand(point, this._anchorStrand.end);
+			var strand1 = new WebStrand(this._anchorStrand.start, this._spinPoint);
+			var strand2 = new WebStrand(this._spinPoint, this._anchorStrand.end);
 			this._anchorStrand = strand2;
 			this._anchorStrandPercent = 0.0;
 			this._anchorStrandPos = { x: x, y: y };
 			return {
-				pointToAdd: point,
+				pointToAdd: this._spinPoint,
 				strandsToAdd: [ strand1, strand2 ],
 				strandToRemove: strandToRemove
 			};
+		}
+		return null;
+	};
+	Spider.prototype.stopSpinningWeb = function() {
+		if(this._spinPoint) {
+			if(this._anchorStrand) {
+				var x = this._anchorStrand.start.x + this._anchorStrandPercent * (this._anchorStrand.end.x - this._anchorStrand.start.x);
+				var y = this._anchorStrand.start.y + this._anchorStrandPercent * (this._anchorStrand.end.y - this._anchorStrand.start.y);
+				var endPoint = new WebPoint(x, y);
+				var strandToRemove = this._anchorStrand;
+				var strand1 = new WebStrand(this._anchorStrand.start, endPoint);
+				var strand2 = new WebStrand(endPoint, this._anchorStrand.end);
+				var strand3 = new WebStrand(this._spinPoint, endPoint);
+				this._anchorStrand = strand2;
+				this._anchorStrandPercent = 0.0;
+				this._anchorStrandPos = { x: x, y: y };
+				this._spinPoint = null;
+				return {
+					pointToAdd: endPoint,
+					strandsToAdd: [ strand1, strand2, strand3 ],
+					strandToRemove: strandToRemove
+				};
+			}
+			else {
+				this._spinPoint = null;
+			}
 		}
 		return null;
 	};
@@ -46,8 +73,10 @@ define([
 			this.y += dy;
 		}
 		this._move = { x: moveX, y: moveY };
-		this.x += (this._move.x === 0 || this._move.y === 0 ? MOVE_SPEED : DIAG_MOVE_SPEED) * this._move.x / 60;
-		this.y += (this._move.x === 0 || this._move.y === 0 ? MOVE_SPEED : DIAG_MOVE_SPEED) * this._move.y / 60;
+		var mx = (this._move.x === 0 || this._move.y === 0 ? MOVE_SPEED : DIAG_MOVE_SPEED) * this._move.x / 60;
+		var my = (this._move.x === 0 || this._move.y === 0 ? MOVE_SPEED : DIAG_MOVE_SPEED) * this._move.y / 60;
+		this.x += mx;
+		this.y += my;
 		var closestCollision = null;
 		var numCollisions = 0;
 		for(var i = 0; i < strands.length; i++) {
@@ -61,8 +90,8 @@ define([
 		}
 		if(!closestCollision) {
 			numCollisions = 0;
-			this.x -= MOVE_SPEED * this._move.x / 60;
-			this.y -= MOVE_SPEED * this._move.y / 60;
+			this.x -= mx;
+			this.y -= my;
 			for(i = 0; i < strands.length; i++) {
 				collision = this._checkForCollision(strands[i]);
 				if(collision) {

@@ -75,7 +75,12 @@ define([
 			if(keys[evt.which]) {
 				keys[evt.which] = false;
 				if(evt.which === SPIN_WEB_KEY) {
-					//TODO
+					var changes = spider.stopSpinningWeb();
+					if(changes) {
+						strands = strands.filter(function(strand) { return !strand.sameAs(changes.strandToRemove); });
+						strands = strands.concat(changes.strandsToAdd);
+						points.push(changes.pointToAdd);
+					}
 				}
 			}
 		});
@@ -112,7 +117,7 @@ define([
 				strands[i].render(ctx, camera);
 			}
 			for(i = 0; i < points.length; i++) {
-				points[i].render(ctx, camera);
+				//points[i].render(ctx, camera);
 			}
 		}
 
