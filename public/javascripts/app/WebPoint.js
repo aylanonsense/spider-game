@@ -6,23 +6,23 @@ define(function() {
 		this.x = x;
 		this.y = y;
 		this._vel = { x: 0, y: 0 };
-		this._isFixed = fixed === true;
-		this._weight = 0;
+		this._isFixed = (fixed === true);
+		this.mass = 0;
 	}
-	WebPoint.prototype.addWeight = function(weight) {
-		this._weight += weight;
+	WebPoint.prototype.addMass = function(mass) {
+		this.mass += mass;
 	};
-	WebPoint.prototype.applyForce = function(x, y) {
-		if(!this._isFixed) {
-			this._vel.x += x;
-			this._vel.y += y;
+	WebPoint.prototype.applyForce = function(forceX, forceY) {
+		if(!this._isFixed && this.mass > 0) {
+			this._vel.x += forceX / this.mass;
+			this._vel.y += forceY / this.mass;
 		}
 	};
 	WebPoint.prototype.tick = function() {
 		if(!this._isFixed) {
 			this._vel.y += 0.5; //gravity
-			this._vel.x *= 0.9;
-			this._vel.y *= 0.9;
+			this._vel.x *= 0.95; // friction
+			this._vel.y *= 0.95; // friction
 			this.x += this._vel.x / 60;
 			this.y += this._vel.y / 60;
 		}

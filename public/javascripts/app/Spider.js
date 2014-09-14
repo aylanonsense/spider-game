@@ -21,15 +21,22 @@ define([
 	}
 	Spider.prototype.startSpinningWeb = function() {
 		if(this._anchorStrand) {
+			var dx = this._anchorStrand.end.x - this._anchorStrand.start.x;
+			var dy = this._anchorStrand.end.y - this._anchorStrand.start.y;
+			var lengthOfStrand = Math.sqrt(dx * dx + dy * dy);
 			var x = this._anchorStrand.start.x + this._anchorStrandPercent * (this._anchorStrand.end.x - this._anchorStrand.start.x);
 			var y = this._anchorStrand.start.y + this._anchorStrandPercent * (this._anchorStrand.end.y - this._anchorStrand.start.y);
 			this._spinPoint = new WebPoint(x, y);
+			dx = x - this._anchorStrand.start.x;
+			dy = y - this._anchorStrand.start.y;
+			var lengthToSpinPoint = Math.sqrt(dx * dx + dy * dy);
 			var strandToRemove = this._anchorStrand;
-			var strand1 = new WebStrand(this._anchorStrand.start, this._spinPoint);
-			var strand2 = new WebStrand(this._spinPoint, this._anchorStrand.end);
+			var strand1 = new WebStrand(this._anchorStrand.start, this._spinPoint, strandToRemove.restingLength * lengthToSpinPoint / lengthOfStrand);
+			var strand2 = new WebStrand(this._spinPoint, this._anchorStrand.end, strandToRemove.restingLength * (1 - lengthToSpinPoint / lengthOfStrand));
 			this._anchorStrand = strand2;
 			this._anchorStrandPercent = 0.0;
 			this._anchorStrandPos = { x: x, y: y };
+			strandToRemove.kill();
 			return {
 				pointToAdd: this._spinPoint,
 				strandsToAdd: [ strand1, strand2 ],
@@ -52,6 +59,7 @@ define([
 				this._anchorStrandPercent = 0.0;
 				this._anchorStrandPos = { x: x, y: y };
 				this._spinPoint = null;
+				strandToRemove.kill();
 				return {
 					pointToAdd: endPoint,
 					strandsToAdd: [ strand1, strand2, strand3 ],

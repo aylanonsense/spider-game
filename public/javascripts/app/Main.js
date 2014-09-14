@@ -98,7 +98,7 @@ define([
 				wind = -3;
 			}
 			for(var i = 0; i < points.length; i++) {
-				points[i]._vel.x += wind;
+				points[i].applyForce(20 * wind, 0);
 			}
 			for(i = 0; i < strands.length; i++) {
 				strands[i].tick();
@@ -113,12 +113,20 @@ define([
 			ctx.fillStyle = '#000';
 			ctx.fillRect(0, 0, WIDTH, HEIGHT);
 			spider.render(ctx, camera);
+			var totalLength = 0;
+			var totalMass = 0;
 			for(i = 0; i < strands.length; i++) {
 				strands[i].render(ctx, camera);
+				totalLength += strands[i].restingLength;
 			}
 			for(i = 0; i < points.length; i++) {
 				//points[i].render(ctx, camera);
+				totalMass += points[i].mass;
 			}
+			ctx.fillStyle = '#fff';
+			ctx.font = '10px Georgia';
+			ctx.fillText("Total web mass: " + Math.round(totalMass), 20, 20);
+			ctx.fillText("Total strand length: " + Math.round(totalLength), 20, 40);
 		}
 
 		//set up animation frame functionality
