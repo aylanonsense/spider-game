@@ -11,14 +11,14 @@ define([
 	Spider
 ) {
 	return function() {
-		var WIDTH = 800, HEIGHT = 600;
+		var WIDTH = 450, HEIGHT = 450;
 		var canvas = $('<canvas width="' + WIDTH + 'px" height = "' + HEIGHT + 'px" ' +
 			'style="display:block;margin: 15Px auto;" />').appendTo(document.body);
 		var ctx = canvas[0].getContext('2d');
 		var camera = { x: 0, y: 0 };
 
 		//init game objects
-		var spider = new Spider(175, 100);
+		var spider = new Spider(50, 100);
 		var strands = [];
 		var points = [];
 		var tempWebPoint = null;
@@ -36,18 +36,18 @@ define([
 		}
 
 		//create web
-		var pt1 = createPoint(175, 25);
-		var pt2 = createPoint(625, 25);
-		var pt3 = createPoint(625, 450);
-		var pt4 = createPoint(175, 450);
+		var pt1 = createPoint(50, 25);
+		var pt2 = createPoint(400, 25);
+		var pt3 = createPoint(400, 400);
+		var pt4 = createPoint(50, 400);
 		createStrand(pt1, pt2);
 		createStrand(pt2, pt3);
 		createStrand(pt3, pt4);
 		createStrand(pt4, pt1);
-		createStrand(pt1, createPoint(150, 0, true));
-		createStrand(pt2, createPoint(650, 0, true));
-		createStrand(pt3, createPoint(800, 600, true));
-		createStrand(pt4, createPoint(0, 600, true));
+		createStrand(pt1, createPoint(0, 0, true));
+		createStrand(pt2, createPoint(450, 0, true));
+		createStrand(pt3, createPoint(450, 450, true));
+		createStrand(pt4, createPoint(0, 450, true));
 
 		//input bindings
 		var keys = { pressed: {} };

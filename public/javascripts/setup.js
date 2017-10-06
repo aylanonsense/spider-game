@@ -1,9 +1,9 @@
 requirejs.config({
-	baseUrl: 'javascripts',
+	baseUrl: BASE_URL + '/javascripts',
 	paths: {
-		lib: '/javascripts/lib',
-		app: '/javascripts/app',
-		jquery: '/javascripts/lib/jquery'
+		lib: 'lib',
+		app: 'app',
+		jquery: 'lib/jquery'
 	}
 });
 requirejs([ 'app/Main' ], function(Main) {

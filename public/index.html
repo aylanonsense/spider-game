@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<title>Spider Game</title>
+		<style>
+			body{
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+		<script type="text/javascript">
+			var BASE_URL = window.location.href;
+			if (BASE_URL.endsWith('/')) {
+				BASE_URL = BASE_URL.substring(0, BASE_URL.length - 1);
+			}
+			(function() {
+				// add script
+				var scripts = document.createElement('script');
+				scripts.setAttribute('src', BASE_URL + '/javascripts/lib/require.js');
+				scripts.setAttribute('data-main', BASE_URL + '/javascripts/setup.js');
+				document.head.appendChild(scripts);
+			})();
+		</script>
+	</head>
+	<body></body>
+</html>

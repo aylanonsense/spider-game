@@ -15,6 +15,9 @@ define(function() {
 		else {
 			this.restingLength = 0.98 * Math.sqrt(dx * dx + dy * dy);
 		}
+		if (isNaN(this.restingLength) || this.restingLength < 10) {
+			this.restingLength = 10;
+		}
 		this.start.addMass(this.restingLength / 2);
 		this.end.addMass(this.restingLength / 2);
 	}

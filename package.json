@@ -2,10 +2,10 @@
 	"version": "0.0.0",
 	"dependencies": {
 		"express": "3.3.3",
-		"jade": "0.32.0",
-		"less-middleware": "0.1.12",
 		"requirejs": "2.1.9",
-		"amdefine": "0.1.0",
+		"amdefine": "0.1.0"
+	},
+	"devDependencies": {
 		"mocha": "~1.21.0",
 		"istanbul": "~0.2.16",
 		"chai": "~1.9.1"
